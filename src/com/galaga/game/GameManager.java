@@ -3,22 +3,22 @@ package com.galaga.game;
 import com.galaga.engine.AbstractGame;
 import com.galaga.engine.GameContainer;
 import com.galaga.engine.Renderer;
+import com.galaga.engine.gfx.Image;
 import com.galaga.engine.gfx.ImageTile;
 
 import java.awt.event.KeyEvent;
 
 public class GameManager extends AbstractGame
 {
-    //private Image image;
+    private Image image;
 
-    private ImageTile image;
+    private ImageTile imageTile;
 
     float tempX = 0;
-    float tempY = 0;
 
     public GameManager()
     {
-        image = new ImageTile("anim.png",64,64);
+        imageTile = new ImageTile("anim.png",64,64);
     }
 
     @Override
@@ -27,12 +27,16 @@ public class GameManager extends AbstractGame
         {
             System.out.println("A was pressed");
         }
-        tempX += dt * 20;
+        tempX += dt * 60;
+
+        if (tempX > 3 ) {
+            tempX = 0;
+        }
     }
 
     @Override
     public void render(GameContainer gc, Renderer r) {
-        r.drawImageTile(image,gc.getInput().getMouseX() - 32,gc.getInput().getMouseY() - 32,(int)tempX,(int)tempY);
+        r.drawImageTile(imageTile,gc.getInput().getMouseX() - 32,gc.getInput().getMouseY() - 32,(int)tempX,0);
     }
 
     public static void main(String args[])

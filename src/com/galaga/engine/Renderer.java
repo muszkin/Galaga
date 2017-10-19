@@ -1,5 +1,6 @@
 package com.galaga.engine;
 
+import com.galaga.engine.gfx.Font;
 import com.galaga.engine.gfx.Image;
 import com.galaga.engine.gfx.ImageTile;
 
@@ -9,6 +10,8 @@ public class Renderer
 {
     private int pW, pH;
     private int[] p;
+
+    private Font font = Font.STANDARD;
 
     public Renderer(GameContainer gc)
     {
@@ -79,6 +82,25 @@ public class Renderer
             for (int x = newX; x < newWidth; x++){
                 setPixel(x + offX,y + offY, image.getP()[(x + tileX * image.getTileW()) + (y + tileY * image.getTileH()) * image.getW()]);
             }
+        }
+    }
+
+    public void drawText(String text, int offX, int offY, int color){
+        text = text.toUpperCase();
+        int offset = 0;
+
+        for (int i= 0; i < text.length(); i++){
+            int unicode = text.codePointAt(i) - 32;
+
+            for(int y = 0; y < font.getFontImage().getH();y++){
+                for (int x = 0; x < font.getWidths()[unicode];x++){
+                    if (font.getFontImage().getP()[(x + font.getOffsets()[unicode]) + y * font.getFontImage().getW()] == 0xffffffff){
+                        setPixel(x + offX + offset,y + offY,color);
+                    }
+                }
+            }
+
+            offset += font.getWidths()[unicode];
         }
     }
 }
