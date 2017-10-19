@@ -3,7 +3,7 @@ package com.galaga.engine.gfx;
 
 public class Font {
 
-    public static final Font STANDARD = new Font("standard.png");
+    public static final Font STANDARD = new Font("/gfx/font/standard.png");
 
     private Image fontImage;
     private int[] offsets;

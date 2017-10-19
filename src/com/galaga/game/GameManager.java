@@ -18,7 +18,7 @@ public class GameManager extends AbstractGame
 
     private GameManager()
     {
-        imageTile = new ImageTile("anim.png",64,64);
+        imageTile = new ImageTile("/gfx/anim.png",64,64);
     }
 
     @Override
