@@ -17,6 +17,7 @@ public class GameContainer implements Runnable
     private int height = 240;
     private float scale = 2f;
     private String title = "Galaga v1.0";
+    private int fps = 0;
 
     public GameContainer(AbstractGame game)
     {
@@ -43,18 +44,18 @@ public class GameContainer implements Runnable
         running = true;
         boolean render = false;
         double firstTime = 0;
-        double lastTime = System.nanoTime() / 10e9;
+        double lastTime = System.nanoTime() / 10e8;
         double passedTime = 0;
         double unprocessedTime = 0;
 
         double frameTime = 0;
         int frames = 0;
-        int fps = 0;
+
 
         while(running)
         {
             render = false;
-            firstTime = System.nanoTime() / 10e9;
+            firstTime = System.nanoTime() / 10e8;
             passedTime = firstTime - lastTime;
             lastTime = firstTime;
 
@@ -74,6 +75,7 @@ public class GameContainer implements Runnable
                 {
                     frameTime = 0;
                     fps = frames;
+                    System.out.println("FPS:" + fps);
                     frames = 0;
                 }
             }
@@ -82,7 +84,7 @@ public class GameContainer implements Runnable
             {
                 renderer.clear();
                 game.render(this,renderer);
-                renderer.drawText("FPS:" +  fps,  0,0,0xff00ffff);
+                renderer.drawText("FPS:" +  getFps(),  0,0,0xff00ffff);
                 window.update();
                 frames++;
 
@@ -142,5 +144,9 @@ public class GameContainer implements Runnable
 
     public Input getInput() {
         return input;
+    }
+
+    public int getFps() {
+        return fps;
     }
 }

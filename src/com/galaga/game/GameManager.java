@@ -14,9 +14,9 @@ public class GameManager extends AbstractGame
 
     private ImageTile imageTile;
 
-    float tempX = 0;
+    private float tempX = 0;
 
-    public GameManager()
+    private GameManager()
     {
         imageTile = new ImageTile("anim.png",64,64);
     }
@@ -27,7 +27,7 @@ public class GameManager extends AbstractGame
         {
             System.out.println("A was pressed");
         }
-        tempX += dt * 60;
+        tempX += dt * 10;
 
         if (tempX > 3 ) {
             tempX = 0;
