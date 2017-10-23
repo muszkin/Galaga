@@ -2,43 +2,85 @@ package com.galaga.engine;
 
 import com.galaga.engine.gfx.Font;
 import com.galaga.engine.gfx.Image;
+import com.galaga.engine.gfx.ImageRequest;
 import com.galaga.engine.gfx.ImageTile;
 
 import java.awt.image.DataBufferInt;
+import java.util.ArrayList;
 
 public class Renderer
 {
+    private Font font = Font.STANDARD;
+    private ArrayList<ImageRequest> imageRequest = new ArrayList<ImageRequest>();
+
     private int pW, pH;
     private int[] p;
+    private int[] zBuffer;
 
-    private Font font = Font.STANDARD;
+    private int zDepth = 0;
+    private boolean processing = false;
+
 
     public Renderer(GameContainer gc)
     {
         pW = gc.getWidth();
         pH = gc.getHeight();
         p = ((DataBufferInt)gc.getWindow().getImage().getRaster().getDataBuffer()).getData();
+        zBuffer = new int[p.length];
     }
 
     public void clear()
     {
         for (int i = 0; i < p.length; i++)
         {
-            p[i] = 0xFF000000;
+            p[i] = 0;
+            zBuffer[i] = 0;
         }
+    }
+
+    public void process()
+    {
+        processing = true;
+        for (int i = 0; i < imageRequest.size(); i++){
+            ImageRequest ir = imageRequest.get(i);
+            setzDepth(ir.zDepth);
+            ir.image.setAlpha(false);
+            drawImage(ir.image,ir.offX,ir.offY);
+        }
+
+        imageRequest.clear();
+        processing = false;
     }
 
     public void setPixel(int x ,int y ,int value)
     {
-        if (x < 0 || x >= pW || y < 0 || y >= pH || ((value >> 24) & 0xff) == 0){
+        int alpha = (value >> 24) & 0xff;
+
+        if (x < 0 || x >= pW || y < 0 || y >= pH || alpha == 0){
             return;
         }
 
-        p[x + y * pW] = value;
+        if (zBuffer[x + y * pW] > zDepth){
+            return;
+        }
+
+        if (alpha == 255) {
+            p[x + y * pW] = value;
+        }else{
+            int pixelColor = p[x + y * pW];
+            int newRed = ((pixelColor >> 16) & 0xff) - (int)((((pixelColor >> 16) & 0xff) - ((value >> 16) & 0xff)) * (alpha / 255f));
+            int newGreen = ((pixelColor >> 8) & 0xff) - (int)((((pixelColor >> 8) & 0xff) - ((value >> 8) & 0xff)) * (alpha / 255f));
+            int newBlue = (pixelColor & 0xff) - (int)(((pixelColor & 0xff) - (value & 0xff)) * (alpha / 255f));
+            p[x + y * pW] = ( 255 << 24 | newRed << 16 | newGreen << 8 | newBlue);
+        }
     }
 
     public void drawImage(Image image, int offX, int offY)
     {
+        if (image.isAlpha() && !processing){
+            imageRequest.add(new ImageRequest(image,zDepth,offX,offY));
+            return;
+        }
         int newX = 0;
         int newY = 0;
         int newWidth = image.getW();
@@ -140,4 +182,11 @@ public class Renderer
     }
 
 
+    public int getzDepth() {
+        return zDepth;
+    }
+
+    public void setzDepth(int zDepth) {
+        this.zDepth = zDepth;
+    }
 }
