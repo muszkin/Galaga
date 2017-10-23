@@ -3,40 +3,37 @@ package com.galaga.game;
 import com.galaga.engine.AbstractGame;
 import com.galaga.engine.GameContainer;
 import com.galaga.engine.Renderer;
-import com.galaga.engine.gfx.Image;
-import com.galaga.engine.gfx.ImageTile;
-
-import java.awt.event.KeyEvent;
+import com.galaga.engine.audio.SoundClip;
 
 public class GameManager extends AbstractGame
 {
-    private Image image;
-
-    private ImageTile imageTile;
-
-    private float tempX = 0;
+    private SoundClip clip;
 
     private GameManager()
     {
-        imageTile = new ImageTile("/gfx/anim.png",64,64);
+        clip = new SoundClip("/bass.wav");
     }
 
     @Override
     public void update(GameContainer gc, float dt) {
-        if (gc.getInput().isKeyDown(KeyEvent.VK_A))
-        {
-            System.out.println("A was pressed");
+        if (gc.getInput().isButtonDown(1)){
+            clip.play();
         }
-        tempX += dt * 10;
+        float volume = clip.getGainControl().getValue() + gc.getInput().getScroll();
+        if (volume > clip.getGainControl().getMaximum()){
+            volume = clip.getGainControl().getMaximum();
+        }else if (volume < clip.getGainControl().getMinimum()){
+            volume = clip.getGainControl().getMinimum();
+        }
+        clip.setVoulme(volume);
 
-        if (tempX > 3 ) {
-            tempX = 0;
-        }
     }
 
     @Override
     public void render(GameContainer gc, Renderer r) {
-        r.drawImageTile(imageTile,gc.getInput().getMouseX() - 32,gc.getInput().getMouseY() - 32,(int)tempX,0);
+        r.drawText("FPS:" +  gc.getFps(),  0,0,0xff00ffff);
+        r.drawText("Volume:" +  clip.getGainControl().getValue(),  0,20,0xff00ffff);
+        r.drawFillRect(gc.getInput().getMouseX() - 120 ,gc.getInput().getMouseY() - 120 ,240,240,0xffffccff);
     }
 
     public static void main(String args[])

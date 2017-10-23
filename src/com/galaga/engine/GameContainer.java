@@ -29,7 +29,6 @@ public class GameContainer implements Runnable
         window = new Window(this);
         renderer = new Renderer(this);
         input = new Input(this);
-
         thread = new Thread(this);
         thread.run();
     }
@@ -41,7 +40,6 @@ public class GameContainer implements Runnable
 
     public void run()
     {
-        running = true;
         boolean render = false;
         double firstTime = 0;
         double lastTime = System.nanoTime() / 10e8;
@@ -50,7 +48,7 @@ public class GameContainer implements Runnable
 
         double frameTime = 0;
         int frames = 0;
-
+        running = true;
 
         while(running)
         {
@@ -83,7 +81,6 @@ public class GameContainer implements Runnable
             {
                 renderer.clear();
                 game.render(this,renderer);
-                renderer.drawText("FPS:" +  getFps(),  0,0,0xff00ffff);
                 window.update();
                 frames++;
 
