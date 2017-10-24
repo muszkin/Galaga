@@ -26,6 +26,12 @@ public class Image {
         image.flush();
     }
 
+    public Image(int[] p,int w, int h){
+        this.p = p;
+        this.w = w;
+        this.h = h;
+    }
+
     public int getW() {
         return w;
     }

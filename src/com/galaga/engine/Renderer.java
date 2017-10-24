@@ -7,6 +7,8 @@ import com.galaga.engine.gfx.ImageTile;
 
 import java.awt.image.DataBufferInt;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class Renderer
 {
@@ -41,10 +43,23 @@ public class Renderer
     public void process()
     {
         processing = true;
+
+        Collections.sort(imageRequest, new Comparator<ImageRequest>() {
+            @Override
+            public int compare(ImageRequest o1, ImageRequest o2) {
+                if (o1.zDepth < o2.zDepth){
+                    return -1;
+                }else if (o1.zDepth > o2.zDepth){
+                    return 1;
+                }else{
+                    return 0;
+                }
+            }
+        });
+
         for (int i = 0; i < imageRequest.size(); i++){
             ImageRequest ir = imageRequest.get(i);
             setzDepth(ir.zDepth);
-            ir.image.setAlpha(false);
             drawImage(ir.image,ir.offX,ir.offY);
         }
 
@@ -60,18 +75,21 @@ public class Renderer
             return;
         }
 
-        if (zBuffer[x + y * pW] > zDepth){
+        int index = x + y * pW;
+
+        if (zBuffer[index] > zDepth){
             return;
         }
+        zBuffer[index] = zDepth;
 
         if (alpha == 255) {
-            p[x + y * pW] = value;
+            p[index] = value;
         }else{
             int pixelColor = p[x + y * pW];
             int newRed = ((pixelColor >> 16) & 0xff) - (int)((((pixelColor >> 16) & 0xff) - ((value >> 16) & 0xff)) * (alpha / 255f));
             int newGreen = ((pixelColor >> 8) & 0xff) - (int)((((pixelColor >> 8) & 0xff) - ((value >> 8) & 0xff)) * (alpha / 255f));
             int newBlue = (pixelColor & 0xff) - (int)(((pixelColor & 0xff) - (value & 0xff)) * (alpha / 255f));
-            p[x + y * pW] = ( 255 << 24 | newRed << 16 | newGreen << 8 | newBlue);
+            p[index] = ( 255 << 24 | newRed << 16 | newGreen << 8 | newBlue);
         }
     }
 
@@ -81,15 +99,17 @@ public class Renderer
             imageRequest.add(new ImageRequest(image,zDepth,offX,offY));
             return;
         }
+        if (offX < -image.getW() ) return;
+        if (offY < -image.getH() ) return;
+        if (offX >= pW) return;
+        if (offY >= pH) return;
+
         int newX = 0;
         int newY = 0;
         int newWidth = image.getW();
         int newHeight = image.getH();
 
-        if (offX < -newWidth ) return;
-        if (offY < -newHeight ) return;
-        if (offX >= pW) return;
-        if (offY >= pH) return;
+
 
         if (offX  < 0){ newX -= offX; }
         if (offY < 0){ newY -= offY; }
@@ -105,15 +125,22 @@ public class Renderer
 
     public void drawImageTile(ImageTile image, int offX, int offY, int tileX, int tileY)
     {
+        if (image.isAlpha() && !processing){
+            imageRequest.add(new ImageRequest(image.getTileImage(tileX,tileY),zDepth,offX,offY));
+            return;
+        }
+
+        if (offX < -image.getTileW() ) return;
+        if (offY < -image.getTileH() ) return;
+        if (offX >= pW) return;
+        if (offY >= pH) return;
+
         int newX = 0;
         int newY = 0;
         int newWidth = image.getTileW();
         int newHeight = image.getTileH();
 
-        if (offX < -newWidth ) return;
-        if (offY < -newHeight ) return;
-        if (offX >= pW) return;
-        if (offY >= pH) return;
+
 
         if (offX  < 0){ newX -= offX; }
         if (offY < 0){ newY -= offY; }
@@ -173,8 +200,8 @@ public class Renderer
         if (newWidth + offX > pW){ newWidth -= (newWidth + offX - pW); }
         if (newHeight + offY > pH){ newHeight -= (newHeight + offY - pH); }
 
-        for (int y = newY; y <= newHeight; y++) {
-            for (int x = newX; x <= newWidth; x++) {
+        for (int y = newY; y < newHeight; y++) {
+            for (int x = newX; x < newWidth; x++) {
                 setPixel(x + offX, y + offY, color);
             }
         }
