@@ -16,25 +16,16 @@ public class GameManager extends AbstractGame
 
     private GameManager()
     {
-        clip = new SoundClip("/bass.wav");
+        clip = new SoundClip("/Star_Trooper.wav");
         image = new Image("/test.png");
         image2 = new Image("/test2.png");
         imageTile = new ImageTile("/test2.png",16,16);
         image2.setAlpha(true);
+        clip.loop();
     }
 
     @Override
     public void update(GameContainer gc, float dt) {
-        if (gc.getInput().isButtonDown(1)){
-            clip.play();
-        }
-        float volume = clip.getGainControl().getValue() + gc.getInput().getScroll();
-        if (volume > clip.getGainControl().getMaximum()){
-            volume = clip.getGainControl().getMaximum();
-        }else if (volume < clip.getGainControl().getMinimum()){
-            volume = clip.getGainControl().getMinimum();
-        }
-        clip.setVoulme(volume);
 
     }
 
