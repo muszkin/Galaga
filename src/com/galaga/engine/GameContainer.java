@@ -30,6 +30,7 @@ public class GameContainer implements Runnable
         renderer = new Renderer(this);
         input = new Input(this);
         thread = new Thread(this);
+        game.init(this);
         thread.run();
     }
 
@@ -81,10 +82,10 @@ public class GameContainer implements Runnable
             {
                 renderer.clear();
                 game.render(this,renderer);
+                renderer.drawText("FPS:" + getFps(),  0,0,0xff00ffff);
                 renderer.process();
                 window.update();
                 frames++;
-
             }else
             {
                 try {
@@ -145,5 +146,13 @@ public class GameContainer implements Runnable
 
     public int getFps() {
         return fps;
+    }
+
+    public Renderer getRenderer() {
+        return renderer;
+    }
+
+    public void setRenderer(Renderer renderer) {
+        this.renderer = renderer;
     }
 }

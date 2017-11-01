@@ -9,6 +9,7 @@ public class Image {
     private int w,h;
     private int[] p;
     private boolean alpha = false;
+    private int lightBlock = Light.NONE;
 
     public Image(String path)
     {
@@ -62,5 +63,13 @@ public class Image {
 
     public void setAlpha(boolean alpha) {
         this.alpha = alpha;
+    }
+
+    public int getLightBlock() {
+        return lightBlock;
+    }
+
+    public void setLightBlock(int lightBlock) {
+        this.lightBlock = lightBlock;
     }
 }
