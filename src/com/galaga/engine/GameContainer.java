@@ -89,7 +89,7 @@ public class GameContainer implements Runnable
             }else
             {
                 try {
-                    Thread.sleep(20);
+                    Thread.sleep(1);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
