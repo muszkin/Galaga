@@ -53,7 +53,7 @@ public class GameContainer implements Runnable
 
         while(running)
         {
-            render = false;
+            render = true;
             firstTime = System.nanoTime() / 10e8;
             passedTime = firstTime - lastTime;
             lastTime = firstTime;
@@ -89,7 +89,7 @@ public class GameContainer implements Runnable
             }else
             {
                 try {
-                    Thread.sleep(1);
+                    Thread.sleep(20);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

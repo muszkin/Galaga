@@ -13,15 +13,20 @@ import java.util.ArrayList;
 
 public class GameManager extends AbstractGame
 {
+    public static final int TS = 16;
     private SoundClip clip;
 
     private ArrayList<GameObject> gameObjects = new ArrayList<GameObject>();
+
+    private boolean[] collision;
+    private int levelW,levelH;
 
     private GameManager()
     {
         clip = new SoundClip("/Star_Trooper.wav");
         clip.loop();
-        gameObjects.add(new Player(2,2));
+        gameObjects.add(new Player(8,4));
+        loadLevel("/level.png");
     }
 
     @Override
@@ -32,7 +37,7 @@ public class GameManager extends AbstractGame
     @Override
     public void update(GameContainer gc, float dt) {
         for (int i = 0; i < gameObjects.size(); i++){
-            gameObjects.get(i).update(gc,dt);
+            gameObjects.get(i).update(gc,this,dt);
             if (!gameObjects.get(i).isActive()){
                 gameObjects.remove(i);
                 i--;
@@ -42,9 +47,50 @@ public class GameManager extends AbstractGame
 
     @Override
     public void render(GameContainer gc, Renderer r) {
+        for (int y = 0; y < levelH; y++) {
+            for (int x = 0; x < levelW; x++) {
+                if (collision[x + y * levelW]) {
+                    r.drawFillRect(x * TS, y * TS, 16, 16, 0xff0f0f0f);
+                }else{
+                    r.drawFillRect(x * TS, y * TS, 16, 16, 0xfff9f9f9);
+                }
+            }
+        }
+
         for (GameObject gameObject: gameObjects){
             gameObject.render(gc,r);
         }
+    }
+
+    public void loadLevel(String path){
+        Image levelImage = new Image(path);
+
+        levelW = levelImage.getW();
+        levelH = levelImage.getH();
+
+        collision = new boolean[levelW * levelH];
+
+        for (int y = 0; y < levelH; y++){
+            for (int x = 0; x < levelW; x++){
+                if (levelImage.getP()[x + y * levelImage.getW()] == 0xff000000){
+                    collision[x + y * levelImage.getW()] = true;
+                }else{
+                    collision[x + y * levelImage.getW()] = false;
+                }
+            }
+        }
+    }
+
+    public void addObject(GameObject gameObject){
+        gameObjects.add(gameObject);
+    }
+
+    public boolean getCollision(int x, int y)
+    {
+        if ( x < 0 || x >= levelW || y < 0 || y >= levelH){
+            return true;
+        }
+        return collision[x + y * levelW];
     }
 
     public static void main(String args[])
