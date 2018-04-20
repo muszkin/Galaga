@@ -2,6 +2,7 @@ package com.galaga.game.objects;
 
 import com.galaga.engine.GameContainer;
 import com.galaga.engine.Renderer;
+import com.galaga.engine.gfx.Image;
 import com.galaga.game.GameManager;
 import com.galaga.game.GameObject;
 
@@ -110,22 +111,22 @@ public class Player extends GameObject {
 
         //Shooting
 
-        if (gc.getInput().isKey(KeyEvent.VK_UP)){
+        if (gc.getInput().isKeyUp(KeyEvent.VK_UP)){
             gm.addObject(new Bullet(tileX,tileY,offX + width / 2, offY + height / 2,0));
         }
-        if (gc.getInput().isKey(KeyEvent.VK_RIGHT)){
+        if (gc.getInput().isKeyUp(KeyEvent.VK_RIGHT)){
             gm.addObject(new Bullet(tileX,tileY,offX + width / 2, offY + height / 2,1));
         }
-        if (gc.getInput().isKey(KeyEvent.VK_DOWN)){
+        if (gc.getInput().isKeyUp(KeyEvent.VK_DOWN)){
             gm.addObject(new Bullet(tileX,tileY,offX + width / 2, offY + height / 2,2));
         }
-        if (gc.getInput().isKey(KeyEvent.VK_LEFT)){
+        if (gc.getInput().isKeyUp(KeyEvent.VK_LEFT)){
             gm.addObject(new Bullet(tileX,tileY,offX + width / 2, offY + height / 2,3));
         }
     }
 
     @Override
     public void render(GameContainer gc, Renderer r) {
-        r.drawFillRect((int)getPosX(),(int)getPosY(),getWidth(),getHeight(),0xff00ff00);
+        r.drawImage(new Image("/player.png"),(int)getPosX(),(int)getPosY());
     }
 }
